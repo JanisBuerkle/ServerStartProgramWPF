@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Input;
 
@@ -9,6 +11,7 @@ namespace ServerStart
     {
         private const string ServerUrl = "http://localhost:8080/startMinecraftServer";
         private string parameterValue;
+        private string secondParameterValue;
 
         public MainWindow()
         {
@@ -20,40 +23,35 @@ namespace ServerStart
             parameterValue = "startServer";
             RequestAndHandleServerAction();
         }
-        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-                this.DragMove();
-        }
+
         private void StopServerButtonClick(object sender, RoutedEventArgs e)
         {
             parameterValue = "stopServer";
             RequestAndHandleServerAction();
         }
-
         private async void RequestAndHandleServerAction()
         {
             using (var client = new HttpClient())
             {
-                var serverUrlWithParameter = $"{ServerUrl}?parameter={parameterValue}";
+                var serverUrlWithParameters = $"{ServerUrl}?parameter={parameterValue}&secondParameter={secondParameterValue}";
 
                 try
                 {
-                    var response = await client.GetAsync(serverUrlWithParameter);
+                    var response = await client.GetAsync(serverUrlWithParameters);
 
                     if (response.IsSuccessStatusCode)
                     {
                         var serverResponse = response.Content.ReadAsStringAsync().Result;
-                        MessageBox.Show(serverResponse, "Serverantwort");
+                        AppendToOutputTextBox(serverResponse);
                     }
                     else
                     {
-                        MessageBox.Show("Fehler beim Ausführen der Aktion auf dem Server.");
+                        AppendToOutputTextBox("Fehler beim Ausführen der Aktion auf dem Server.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Fehler: {ex.Message}");
+                    AppendToOutputTextBox($"Fehler: {ex.Message}");
                 }
             }
         }
@@ -61,6 +59,27 @@ namespace ServerStart
         private void ExitButtonClicked(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void SendCommand(object sender, RoutedEventArgs e)
+        {
+            var command = CommandBox.Text;
+            CommandBox.Text = "";
+            secondParameterValue = command;
+            parameterValue = "command";
+            RequestAndHandleServerAction();
+        }
+
+        private void AppendToOutputTextBox(string text)
+        {
+            outputTextBox.AppendText(text + Environment.NewLine);
+            outputTextBox.ScrollToEnd();
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
         }
     }
 }

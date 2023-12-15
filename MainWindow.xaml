@@ -19,13 +19,24 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Button Grid.Column="1" Style="{StaticResource MyButtonStyle}" Margin="0,10,10,0" VerticalAlignment="Top" Content="✖" Click="ExitButtonClicked"/>
             <StackPanel Grid.Column="0">
                 <Button Content="Start Console App" Click="StartServerButtonClick" Style="{StaticResource MyButtonStyle}" FontSize="40" FontWeight="DemiBold"/>
                 <Button Content="Close Console App" Click="StopServerButtonClick" Style="{StaticResource MyButtonStyle}" FontSize="40" FontWeight="DemiBold"/>
             </StackPanel>
-            <TextBlock Grid.Column="0" x:Name="ConsoleOutputTextBlock" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10"/>
+            
+            <StackPanel Grid.Column="0" Grid.Row="1">
+                <TextBox x:Name="outputTextBox" MinHeight="300" Margin="0,0,0,2"/>
+                <StackPanel   Height="50" Orientation="Horizontal">
+                    <TextBox x:Name="CommandBox" Width="500" FontSize="20"/>
+                    <Button FontSize="20" Content="⫸" HorizontalAlignment="Left" Click="SendCommand"/>
+                </StackPanel>
+            </StackPanel>
+
+
+            
         </Grid>
     </Border>
 </Window>
